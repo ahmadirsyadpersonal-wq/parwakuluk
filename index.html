@@ -1,19 +1,85 @@
 <!DOCTYPE html>
-<html>
+<html lang="ms">
 <head>
-  <title>Location Test</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lokasi Semasa</title>
+
+<style>
+body {
+  font-family: Arial;
+  height: 100vh;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+}
+
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 18px;
+  width: 320px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+h2 {
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 13px;
+  color: #555;
+}
+
+button {
+  margin-top: 15px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: #4facfe;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #2196f3;
+}
+
+.status {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #333;
+  word-break: break-word;
+}
+</style>
 </head>
+
 <body>
 
-<button onclick="sendLocation()">Hantar Location</button>
+<div class="card">
+  <h2>📍 Lokasi Semasa</h2>
+  <p>Tekan button untuk dapatkan & hantar lokasi</p>
+
+  <button onclick="getLocation()">Hantar Lokasi</button>
+
+  <div class="status" id="status">Menunggu...</div>
+</div>
 
 <script>
-const token = "8907134153:AAGJopxLKtl4QlaNzlnosbzJp2c-59Tnp7s";
+const token = "ISI_TOKEN_KAU";
 const chatId = "5820655266";
 
-function sendLocation() {
+function getLocation() {
+  const status = document.getElementById("status");
+  status.innerText = "📡 Mengambil lokasi...";
+
   if (!navigator.geolocation) {
-    alert("Browser tak support location");
+    status.innerText = "Browser tak support location";
     return;
   }
 
@@ -21,25 +87,36 @@ function sendLocation() {
     const lat = pos.coords.latitude;
     const lon = pos.coords.longitude;
 
-    const url = `https://api.telegram.org/bot${token}/sendLocation`;
+    status.innerText = `📍 Dapat lokasi: ${lat}, ${lon}`;
 
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: chatId,
-        latitude: lat,
-        longitude: lon
-      })
-    });
+    try {
+      const res = await fetch(`https://api.telegram.org/bot${token}/sendLocation`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          chat_id: chatId,
+          latitude: lat,
+          longitude: lon
+        })
+      });
 
-    if (res.ok) {
-      alert("Location dah hantar!");
-    } else {
-      alert("Error hantar ke Telegram");
+      if (res.ok) {
+        status.innerText = "✅ Lokasi berjaya dihantar ke Telegram";
+      } else {
+        status.innerText = "❌ Gagal hantar ke Telegram";
+      }
+
+    } catch (err) {
+      status.innerText = "❌ Error: " + err.message;
     }
+
   }, (err) => {
-    alert("Location gagal: " + err.message);
+    status.innerText = "❌ Location gagal: " + err.message;
+  }, {
+    enableHighAccuracy: true,
+    timeout: 10000
   });
 }
 </script>
