@@ -1,114 +1,48 @@
-<!DOCTYPE html><html lang="ms">
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Share My Location</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }body {
-  background: #f5f7fa;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
-
-.card {
-  background: #fff;
-  width: 100%;
-  max-width: 430px;
-  padding: 30px;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  text-align: center;
-}
-
-h1 {
-  margin-bottom: 10px;
-}
-
-p {
-  color: #555;
-  margin-bottom: 20px;
-  line-height: 1.5;
-}
-
-button {
-  width: 100%;
-  padding: 16px;
-  border: none;
-  border-radius: 14px;
-  background: #2563eb;
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #1d4ed8;
-}
-
-#status {
-  margin-top: 20px;
-  font-size: 15px;
-}
-
-  </style>
+  <title>Location Test</title>
 </head>
-<body><div class="card">
-  <h1>📍 Share My Location</h1>
-  <p>
-    Tekan butang di bawah. Sistem akan minta permission lokasi.
-    Bila tekan <b>Allow</b>, lokasi semasa akan dihantar kepada keluarga.
-  </p><button onclick="getLocation()">SHARE MY LOCATION</button>
+<body>
 
-  <div id="status"></div>
-</div><script>
-  // GANTI DENGAN BOT TOKEN TELEGRAM ANDA
-  const BOT_TOKEN = "8907134153:AAFlF4lOCjN9-m-Xw1nxNnzVt4sIC6qzwM";
+<button onclick="sendLocation()">Hantar Location</button>
 
-  // GANTI DENGAN CHAT ID TELEGRAM ANDA
-  const CHAT_ID = "5820655266";
+<script>
+const token = "8907134153:AAGJopxLKtl4QlaNzlnosbzJp2c-59Tnp7s";
+const chatId = "5820655266";
 
-  function getLocation() {
-    const status = document.getElementById("status");
-
-    if (!navigator.geolocation) {
-      status.innerHTML = "Browser tidak support location.";
-      return;
-    }
-
-    status.innerHTML = "Sedang meminta permission lokasi...";
-
-    navigator.geolocation.getCurrentPosition(
-      async function(position) {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-        const mapLink = `https://www.google.com/maps?q=${lat},${lon}`;
-
-        status.innerHTML = "Lokasi berjaya diperoleh. Sedang dihantar...";
-
-        const message = `📍 Lokasi Baru%0ALatitude: ${lat}%0ALongitude: ${lon}%0ALink: ${mapLink}`;
-
-        const telegramURL = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${message}`;
-
-        try {
-          await fetch(telegramURL);
-          status.innerHTML = "Lokasi berjaya dihantar.";
-        } catch (error) {
-          status.innerHTML = "Gagal menghantar lokasi.";
-        }
-      },
-      function() {
-        status.innerHTML = "Permission location ditolak atau gagal.";
-      }
-    );
+function sendLocation() {
+  if (!navigator.geolocation) {
+    alert("Browser tak support location");
+    return;
   }
-</script></body>
+
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const lat = pos.coords.latitude;
+    const lon = pos.coords.longitude;
+
+    const url = `https://api.telegram.org/bot${token}/sendLocation`;
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        latitude: lat,
+        longitude: lon
+      })
+    });
+
+    if (res.ok) {
+      alert("Location dah hantar!");
+    } else {
+      alert("Error hantar ke Telegram");
+    }
+  }, (err) => {
+    alert("Location gagal: " + err.message);
+  });
+}
+</script>
+
+</body>
 </html>
